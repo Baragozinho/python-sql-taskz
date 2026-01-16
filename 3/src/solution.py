@@ -5,5 +5,21 @@ conn = psycopg2.connect('postgresql://postgres:@localhost:5432/test_db')
 
 
 # BEGIN (write your solution here)
+def batch_insert(connection, products_list):
+    with connection.cursor() as cursor:
+        data = [(p['name'], p['price'], p['quantity']) for p in products_list]
+        
+        execute_values(
+            cursor,
+            "INSERT INTO products (name, price, quantity) VALUES %s",
+            data,
+            template="(%s, %s, %s)"
+        )
+        connection.commit()
 
+
+def get_all_products(connection):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM products ORDER BY price DESC")
+        return cursor.fetchall()
 # END
